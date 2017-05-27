@@ -1,0 +1,13 @@
+Test result: 94.1/100
+
+Selected graph:
+(0 means no edge from row_number to col_number)
+(1 means there is an edge from row_number to col_number)
+
+[
+[0, 0, 0, 0, 0]
+[0, 0, 0, 0, 0]
+[0, 0, 0, 0, 1]
+[0, 1, 0, 0, 1]
+[0, 0, 0, 0, 0]
+]
