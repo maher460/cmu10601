@@ -3,6 +3,9 @@ Author: Maher Khan (mhkhan)
 
 HOMEWORK 3
 
+NOTE: Loyd max takes about 63 iterations in order to converge
+      Kmeans takes about 12 iterations in order to converge
+
 Dependencies:
 Python 2.7
 
