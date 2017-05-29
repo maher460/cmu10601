@@ -1,3 +1,5 @@
+Author: Maher Khan
+
 Homework Descriptions and Instructions:
 
 HW2: 
