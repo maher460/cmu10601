@@ -1,0 +1,38 @@
+This is a tiny corpus to conduct a trivial speaker-recognition experiment.
+
+There are recordings from 10 speakers, numbered 101 through 110.  For each speaker we have a number of "enrollment" recordings, which are the training data for the speaker.  For each speaker we also have a number of *test* recordings.
+
+-----------------------------------------------------------------
+TRAINING DATA:
+
+All training recordings for the speakers are in the directory called "enroll".  This directory has 10 subdirectories, one corresponding to each speaker. Each speaker has a number of files in it.  Thus,  "enroll/101" has all the enrollment files for speaker 101.
+
+The *list* of enrollment files corresponding to each speaker is in:
+lists/SPEAKER.traininglist
+where "SPEAKER" is one of 101, 102.. 110.  So the full list of files that are in enroll/101 is in lists/101.traininglist.
+
+-----------------------------------------------------------------
+TEST DATA:
+
+The *test* recordings are in the directory called "verify". This directory too has 10 subdirectories, one for each speaker. Thus verify/101 has all the test files for speaker 101. 
+
+The list of *test* files corresponding to each speaker is in:
+lists/SPEAKER.testlist.  So the full list of files in verify/101 is in lists/101.testlist.
+
+-----------------------------------------------------------------
+WHAT'S IN EACH FILE:
+
+Each file consists of the short-time fourier transform features derived from a single speech recording by the speaker. Each file consists of several lines. Each line has 257 floating point numbers and represents *one* log-spectral vector derived from the recording. Each recording is thus a sequence of 257-dimensional log-spectral vectors, where the number of vectors may vary across recordings, depending on their length.
+
+These are the feature vectors you will work with.
+
+How we got thse features:
+------------------------
+
+Each recording was originally a single short utterance, a few seconds long. The recordings were all sampled at 8000 samples per second (so that a 5-second recording is stored as a sequence of 40000 numbers) 
+
+The information in a speech signal is actually in its frequency content. The frequency composition of a signal can be obtained by computing its Fourier transform.
+
+In the speech signal the frequency composition is continuously changing. So we will compute the Fourier transform repeatedly.  Each FT "views" a 64ms segment of the audio (comprising 512 samples at 8000 samples/second). The FT computes 257 unique spectral components, representing the energies in 257 uniformly spaced frquencies between 0 and 4000Hz. The stored features are the *logaritm* of these features.
+
+Although each 257-component feature is computed from a 64ms segment of the audio, we will take one such snapshot every 8ms.  So we get 125 such vectors for every second of speech.  Thus the features file for a 2-second recording will have 250 257-dimensional spectral vectors.
