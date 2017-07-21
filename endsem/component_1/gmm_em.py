@@ -22,7 +22,7 @@ NUM_ITERATIONS = 10
 # Processing data
 
 print("Loading parsed data...")
-traindata_processed_file = open("parsed_data/data1_small.universalenrollparsed", "r")
+traindata_processed_file = open("parsed_data/data1.universalenrollparsed", "r")
 data = json.loads(traindata_processed_file.read())
 traindata_processed_file.close()
 print("Done loading parsed data!")
@@ -87,6 +87,7 @@ while iter_count < NUM_ITERATIONS:
 
 
     # Summary: N(X; mean(k), covar(k))
+
     def map_gaussian_pdf(x):
         
         inst_idx = x[0]
@@ -106,7 +107,7 @@ while iter_count < NUM_ITERATIONS:
 
         #one_div_root_two_pi_d_det_covar = np.divide(1,np.sqrt(det_covar * two_pi_d))
 
-        two_pi_d_ln = np.log(two_pi_d)
+        two_pi_d_ln = 257*(math.log(2*math.pi))
 
         covar_ln = np.log(np.array(covar))
         det_covar_ln = np.sum(covar_ln)
@@ -143,10 +144,17 @@ while iter_count < NUM_ITERATIONS:
         #     print ("res", res)
 
         #     print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+        
+        if res == 0.0:
+            zero_count = 1
+        else:
+            zero_count = 0
 
-        return (x, res)
+        return (x, res, zero_count)
 
     all_N_combs_res_dict = {}
+    zero_counts = 0
+
     print(">>>>> About to map gaussian pdf...")
     pool = multiprocessing.Pool()
 
@@ -155,12 +163,15 @@ while iter_count < NUM_ITERATIONS:
                                              chunksize=10),
                          total=total_computations):
         all_N_combs_res_dict[res[0]] = res[1]
+        zero_counts = zero_counts + res[2]
 
     #all_N_combs_res = pool.map(map_gaussian_pdf, all_N_combs)
 
     pool.close()
     pool.join()
     print(">>>>> Done with parallel map gaussian pdf....")
+
+    print("zero_counts: ", zero_counts)
 
     # print "About to start the heavy N computations..."
     # total_computations = len(all_N_combs)
@@ -202,6 +213,7 @@ while iter_count < NUM_ITERATIONS:
 
     inst_indices = range(num_inst)
     sum_g_weights_N_X = {}
+    max_log_likelihood = 0.0
 
     print(">>>>> About to map sum_g_weight_N_X...")
     pool = multiprocessing.Pool()
@@ -211,6 +223,9 @@ while iter_count < NUM_ITERATIONS:
                                              chunksize=10),
                          total=total_computations):
         sum_g_weights_N_X[res[0]] = res[1]
+
+        if (res[1] != 0.0 and (not math.isnan(res[1]))):
+            max_log_likelihood = max_log_likelihood + np.log(res[1])
 
     pool.close()
     pool.join()
@@ -327,6 +342,8 @@ while iter_count < NUM_ITERATIONS:
     mixture_weights = np.array(new_weights)
     means = np.array(new_means)
     variances = new_covars_np
+
+    print ("max_log_likelihood", max_log_likelihood)
 
 
 
